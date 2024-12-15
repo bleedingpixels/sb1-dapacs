@@ -1,0 +1,74 @@
+.songs-list {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.song-item:last-child {
+  border-bottom: none;
+}
+
+.song-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.song-info svg {
+  font-size: 24px;
+  color: #1db954;
+}
+
+.song-item h3 {
+  margin: 0;
+  color: #333;
+}
+
+.song-item p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.remove-button:hover {
+  background: #ffeeee;
+}
+
+.remove-button svg {
+  font-size: 18px;
+}
+
+@media (max-width: 600px) {
+  .song-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .song-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .remove-button {
+    margin-top: 10px;
+  }
+}
