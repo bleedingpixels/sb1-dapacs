@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createSpotifyPlaylist } from '../../../utils/spotify';
 import { createAppleMusicPlaylist } from '../../../utils/appleMusic';
+import { getSpotifyAuthUrl } from '../../../utils/spotify';
 
 export function usePlaylist() {
   const [songs, setSongs] = useState([]);
@@ -8,6 +9,7 @@ export function usePlaylist() {
   const [activeTab, setActiveTab] = useState('manual');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
+  const [unmatchedSongs, setUnmatchedSongs] = useState([]);
 
   const handleAddSong = (newSong) => {
     setSongs([...songs, newSong]);
@@ -24,6 +26,7 @@ export function usePlaylist() {
   const createPlaylist = async (playlistName) => {
     setIsCreating(true);
     setError(null);
+    setUnmatchedSongs([]);
 
     try {
       if (platform === 'spotify') {
@@ -32,16 +35,21 @@ export function usePlaylist() {
           window.location.href = getSpotifyAuthUrl();
           return;
         }
-        await createSpotifyPlaylist(accessToken, 'me', playlistName, songs);
+        const result = await createSpotifyPlaylist(accessToken, playlistName, songs);
+        console.log('Playlist created successfully:', result);
+        setUnmatchedSongs(result.unmatchedSongs);
       } else {
         const musicUserToken = localStorage.getItem('appleMusicUserToken');
         if (!musicUserToken) {
           setError('Please authenticate with Apple Music first');
           return;
         }
-        await createAppleMusicPlaylist(musicUserToken, playlistName, songs);
+        const result = await createAppleMusicPlaylist(musicUserToken, playlistName, songs);
+        console.log('Apple Music Playlist created successfully:', result);
+        // Handle unmatched songs for Apple Music if applicable
       }
     } catch (err) {
+      console.error('Error in createPlaylist:', err);
       setError(err.message);
     } finally {
       setIsCreating(false);
@@ -54,6 +62,7 @@ export function usePlaylist() {
     activeTab,
     isCreating,
     error,
+    unmatchedSongs,
     setPlatform,
     setActiveTab,
     handleAddSong,

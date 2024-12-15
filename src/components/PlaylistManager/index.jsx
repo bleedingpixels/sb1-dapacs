@@ -13,6 +13,7 @@ export function PlaylistManager() {
     activeTab,
     isCreating,
     error,
+    unmatchedSongs,
     setPlatform,
     setActiveTab,
     handleAddSong,
@@ -44,6 +45,7 @@ export function PlaylistManager() {
         isCreating={isCreating}
         error={error}
         isAuthenticated={isAuthenticated}
+        unmatchedSongs={unmatchedSongs}
       />
     </div>
   );

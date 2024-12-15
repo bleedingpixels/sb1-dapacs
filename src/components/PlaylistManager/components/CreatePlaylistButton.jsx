@@ -14,17 +14,16 @@ export function CreatePlaylistButton({
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onCreatePlaylist(playlistName)
-      .then(() => {
-        setIsOpen(false);
-        setSuccessMessage('Playlist created successfully!');
-        setErrorMessage('');
-      })
-      .catch((err) => {
-        setErrorMessage('Failed to create playlist. Please try again.');
-      });
+    try {
+      await onCreatePlaylist(playlistName);
+      setIsOpen(false);
+      setSuccessMessage('Playlist created successfully!');
+      setErrorMessage('');
+    } catch (err) {
+      setErrorMessage('Failed to create playlist. Please try again.');
+    }
   };
 
   if (!isAuthenticated) {
@@ -73,8 +72,9 @@ export function CreatePlaylistButton({
                 value={playlistName}
                 onChange={(e) => setPlaylistName(e.target.value)}
                 placeholder="Playlist name"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 mb-4"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
+                disabled={isCreating}
               />
 
               {error && (
@@ -86,14 +86,16 @@ export function CreatePlaylistButton({
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  disabled={isCreating}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                  className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors ${isCreating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isCreating}
                 >
-                  Create Playlist
+                  {isCreating ? 'Creating...' : 'Create Playlist'}
                 </button>
               </div>
             </form>
