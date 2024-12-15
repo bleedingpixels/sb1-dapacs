@@ -96,7 +96,10 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
 
       if (data.tracks.items.length === 0) {
         console.warn(`No matches found for "${song.title}" by "${song.artist}".`);
-        unmatchedSongs.push(song);
+        unmatchedSongs.push({
+          ...song,
+          suggestedMatch: null, // No suggestions available
+        });
         continue;
       }
 
@@ -110,7 +113,13 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
         console.log(`Matched "${song.title}" to "${matchedTrack.name}" by "${matchedTrack.artists[0].name}".`);
       } else {
         console.warn(`No suitable match found for "${song.title}" by "${song.artist}".`);
-        unmatchedSongs.push(song);
+        unmatchedSongs.push({
+          ...song,
+          suggestedMatch: data.tracks.items[0] ? {
+            title: data.tracks.items[0].name,
+            artist: data.tracks.items[0].artists[0].name,
+          } : null, // Suggest top match if available
+        });
       }
     }
 
