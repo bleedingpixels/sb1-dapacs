@@ -11,11 +11,20 @@ export function CreatePlaylistButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [playlistName, setPlaylistName] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCreatePlaylist(playlistName);
-    setIsOpen(false);
+    onCreatePlaylist(playlistName)
+      .then(() => {
+        setIsOpen(false);
+        setSuccessMessage('Playlist created successfully!');
+        setErrorMessage('');
+      })
+      .catch((err) => {
+        setErrorMessage('Failed to create playlist. Please try again.');
+      });
   };
 
   if (!isAuthenticated) {
@@ -28,6 +37,18 @@ export function CreatePlaylistButton({
 
   return (
     <>
+      {successMessage && (
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-green-700 mb-2">{successMessage}</p>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+          <p className="text-red-700 mb-2">{errorMessage}</p>
+        </div>
+      )}
+
       <button
         onClick={() => setIsOpen(true)}
         disabled={isCreating}
