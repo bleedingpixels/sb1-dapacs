@@ -31,7 +31,19 @@ const preprocessString = (str) => {
   return str
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s]/gi, ''); // Removes non-alphanumeric characters
+    .replace(/['".,!?-]/g, '') // Remove more punctuation
+    .replace(/\s+/g, ' ') // Normalize spaces
+    .replace(/[&]/g, 'and')
+    .replace(/feat\.|ft\./g, '') // Remove featuring indicators
+    .replace(/\(.*?\)/g, '') // Remove content in parentheses
+    .trim();
+};
+
+// Helper function to calculate similarity
+const similarity = (str1, str2) => {
+  const a = preprocessString(str1);
+  const b = preprocessString(str2);
+  return a === b ? 1 : (a.includes(b) || b.includes(a) ? 0.8 : 0);
 };
 
 /**
@@ -69,18 +81,27 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
     // Initialize arrays to hold track URIs and unmatched songs
     const trackUris = [];
     const unmatchedSongs = [];
+    const addedSongs = new Set(); // Track added songs to prevent duplicates
 
     // Define Fuse.js options for fuzzy searching
     const fuseOptions = {
-      keys: ['name', 'artists.name'],
-      threshold: 0.4, // Adjust based on desired strictness
+      keys: [{
+        name: 'name',
+        weight: 0.7
+      }, {
+        name: 'artists.name',
+        weight: 0.3
+      }],
+      threshold: 0.6, // More tolerant threshold
+      distance: 100, // Allow more characters between matches
+      minMatchCharLength: 2
     };
 
     // Iterate over each song to find the best match
     for (const song of songs) {
       const processedTitle = preprocessString(song.title);
       const processedArtist = preprocessString(song.artist);
-      const query = `track:${processedTitle} artist:${processedArtist}`;
+      const query = `${processedTitle}`; // Search primarily by title
 
       const { data } = await axios.get(
         `${SPOTIFY_API_URL}/search`,
@@ -88,7 +109,8 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
           params: {
             q: query,
             type: 'track',
-            limit: 5,
+            limit: 10,
+            market: 'US', // Add market parameter to improve results
           },
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -103,29 +125,35 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
         continue;
       }
 
-      // Use Fuse.js to find the best match among the top 5 results
-      const fuse = new Fuse(data.tracks.items, fuseOptions);
-      const result = fuse.search(processedTitle)[0];
+      // Sort tracks by popularity and filter duplicates
+      const bestMatch = data.tracks.items
+        .sort((a, b) => {
+          // Calculate match scores
+          const aScore = similarity(a.name, song.title) + 
+                        (similarity(a.artists[0].name, song.artist) * 0.5) +
+                        (a.popularity / 100 * 0.3);
+          const bScore = similarity(b.name, song.title) + 
+                        (similarity(b.artists[0].name, song.artist) * 0.5) +
+                        (b.popularity / 100 * 0.3);
+          return bScore - aScore;
+        })
+        .find(track => {
+          const key = `${preprocessString(track.name)}-${preprocessString(track.artists[0].name)}`;
+          if (!addedSongs.has(key)) {
+            addedSongs.add(key);
+            return true;
+          }
+          return false;
+        });
 
-      if (result) {
-        const matchedTrack = result.item;
-        trackUris.push(matchedTrack.uri);
-        console.log(`Matched "${song.title}" to "${matchedTrack.name}" by "${matchedTrack.artists[0].name}".`);
+      if (bestMatch) {
+        trackUris.push(bestMatch.uri);
+        console.log(`Added most popular version: "${bestMatch.name}" by "${bestMatch.artists[0].name}" (popularity: ${bestMatch.popularity})`);
       } else {
-        console.warn(`No suitable match found for "${song.title}" by "${song.artist}".`);
-        const topMatch = data.tracks.items[0];
-        if (topMatch) {
-          // Update song information to top match
-          song.title = topMatch.name;
-          song.artist = topMatch.artists[0].name;
-          trackUris.push(topMatch.uri);
-          console.log(`Updated song to top match: "${song.title}" by "${song.artist}".`);
-        } else {
-          unmatchedSongs.push({
-            ...song,
-            suggestedMatch: null, // No suggestions available
-          });
-        }
+        unmatchedSongs.push({
+          ...song,
+          suggestedMatch: null, // No suggestions available
+        });
       }
     }
 
