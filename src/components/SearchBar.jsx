@@ -8,6 +8,7 @@ function SongSearch() {
   const [result, setResult] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null); // Add error state
 
   // Debounce the search input
   useEffect(() => {
@@ -24,8 +25,15 @@ function SongSearch() {
 
   const fetchSuggestions = async (searchTerm) => {
     setIsLoading(true);
+    setError(null); // Reset error state
     try {
       const token = import.meta.env.VITE_SPOTIFY_ACCESS_TOKEN; // Use environment variable
+      console.log('Spotify Access Token:', token); // Debug: Log the token
+
+      if (!token) {
+        throw new Error('Spotify access token is missing.');
+      }
+
       const response = await axios.get('https://api.spotify.com/v1/search', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -36,9 +44,16 @@ function SongSearch() {
           limit: 5,
         },
       });
+      console.log('Spotify API Response:', response.data); // Debug: Log response data
+
+      if (response.data.tracks.items.length === 0) {
+        setError('No songs found.');
+      }
+
       setSuggestions(response.data.tracks.items);
     } catch (error) {
       console.error('Error fetching Spotify suggestions:', error);
+      setError('Failed to fetch suggestions. Please check the console for more details.');
     } finally {
       setIsLoading(false);
     }
@@ -76,13 +91,14 @@ function SongSearch() {
           ))}
         </ul>
       )}
+      {error && <p className="mt-4 text-red-500">{error}</p>} {/* Display error */}
       {result ? (
         <div className="mt-4">
           <h3 className="text-lg font-semibold">{result.title}</h3>
           <p className="text-gray-600">{result.artist}</p>
         </div>
       ) : (
-        query.length > 2 && !isLoading && <p className="mt-4 text-gray-600">No match found.</p>
+        query.length > 2 && !isLoading && !error && <p className="mt-4 text-gray-600">No match found.</p>
       )}
     </div>
   );
