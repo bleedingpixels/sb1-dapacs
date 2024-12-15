@@ -2,9 +2,4 @@
 
 // ...existing code...
 
-export function handleSearch(query, setResult) {
-  // Remove the existing search handling
-  // ...existing code...
-}
-
 // ...existing code...

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { handleSearch } from './SearchBar.js';
 import axios from 'axios'; // Add axios for API requests
 
 // ...existing code...
@@ -26,7 +25,7 @@ function SongSearch() {
   const fetchSuggestions = async (searchTerm) => {
     setIsLoading(true);
     try {
-      const token = 'YOUR_SPOTIFY_ACCESS_TOKEN'; // Replace with your Spotify access token
+      const token = import.meta.env.VITE_SPOTIFY_ACCESS_TOKEN; // Use environment variable
       const response = await axios.get('https://api.spotify.com/v1/search', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -45,11 +44,6 @@ function SongSearch() {
     }
   };
 
-  const onSearchChange = (value) => {
-    setQuery(value);
-    handleSearch(value, setResult); // Optional: You can remove this if not needed
-  };
-
   const handleSelectSuggestion = (track) => {
     setQuery(track.name);
     setResult({
@@ -65,7 +59,7 @@ function SongSearch() {
         type="text"
         placeholder="Search for a song..."
         value={query}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded"
       />
       {isLoading && <div className="absolute right-2 top-2">Loading...</div>}
