@@ -1,14 +1,10 @@
-import { matchSong } from '../utils/songMatcher';
+// ...existing code...
 
 // ...existing code...
 
-function handleSearch(query, setResult) {
-  const song = matchSong(query);
-  if (song) {
-    setResult(song);
-  } else {
-    setResult(null);
-  }
+export function handleSearch(query, setResult) {
+  // Remove the existing search handling
+  // ...existing code...
 }
 
 // ...existing code...

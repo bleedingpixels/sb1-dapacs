@@ -1,3 +1,77 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ...existing styles... */
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-gray-300 {
+  border-color: #D1D5DB;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.max-h-60 {
+  max-height: 15rem;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: #E5E7EB;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-600 {
+  color: #4B5563;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PlaylistManager } from './components/PlaylistManager';
 import { SpotifyCallback } from './components/SpotifyCallback';
+import SongSearch from './components/SearchBar.jsx';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
             <Route path="/callback" element={<SpotifyCallback />} />
             <Route path="/" element={<PlaylistManager />} />
           </Routes>
+          <SongSearch /> {/* Ensure SongSearch is placed appropriately */}
         </div>
       </div>
     </BrowserRouter>
