@@ -27,3 +27,6 @@ export function useSpotifyAuth() {
     logout
   };
 }
+
+// Remove this file if it's no longer used by any component.
+// If used elsewhere, retain and clean up unused parts.
