@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PlaylistManager from './PlaylistManager/components/PlaylistManager';
@@ -11,7 +10,7 @@ function App() {
     <ThemeProvider>
       <div className="min-h-screen bg-surface-light dark:bg-surface-dark 
                       text-content-light dark:text-content-dark transition-colors">
-        <nav className="bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-700 flex justify-between p-4">
+        <nav className="bg-surface-light dark:bg-surface-dark border-b border-accent-gray flex justify-between p-6 rounded-xl shadow-spotify">
           {/* Navigation Items */}
           <ThemeToggle />
         </nav>
@@ -23,7 +22,9 @@ function App() {
             </Routes>
           </BrowserRouter>
         </main>
-        {/* Footer or other components */}
+        <footer className="footer mt-auto bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-spotify">
+          {/* Footer Content */}
+        </footer>
       </div>
     </ThemeProvider>
   );

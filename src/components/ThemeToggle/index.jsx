@@ -7,7 +7,7 @@ export const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full bg-accent-gray dark:bg-accent-gray text-accent-green focus:outline-none"
+      className="p-2 rounded-full bg-accent-gray text-accent-green focus:outline-none shadow-spotify hover:bg-accent-gray-dark transition-colors"
       aria-label="Toggle Theme"
     >
       {theme === 'dark' ? (
