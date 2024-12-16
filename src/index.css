@@ -1,111 +1,92 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-/* ...existing styles... */
+@layer base {
+  body {
+    @apply bg-surface-light text-content-light transition-colors
+           dark:bg-surface-dark dark:text-content-dark;
+  }
 
-/* Custom styles for autocomplete dropdown */
-/* 
-.relative {
-  position: relative;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-content-light dark:text-content-dark;
+  }
+
+  input, select, textarea {
+    @apply bg-white border-gray-200 text-gray-900
+           dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100
+           focus:ring-primary-500 focus:border-primary-500
+           dark:focus:ring-primary-400 dark:focus:border-primary-400;
+  }
 }
 
-.absolute {
-  position: absolute;
+/* Components */
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium
+           bg-primary-600 text-white hover:bg-primary-700
+           dark:bg-primary-500 dark:hover:bg-primary-600
+           transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium
+           bg-gray-100 text-gray-900 hover:bg-gray-200
+           dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700
+           transition-colors;
+  }
+
+  .card {
+    @apply bg-white border border-gray-200 rounded-lg p-6
+           dark:bg-gray-800 dark:border-gray-700
+           shadow-sm hover:shadow-md transition-shadow;
+  }
 }
 
-.z-10 {
-  z-index: 10;
+/* Base styles */
+:root {
+  color-scheme: light;
 }
 
-.w-full {
-  width: 100%;
+:root.dark {
+  color-scheme: dark;
 }
 
-.bg-white {
-  background-color: white;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.border-gray-300 {
-  border-color: #D1D5DB;
-}
-
-.rounded {
-  border-radius: 0.25rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.max-h-60 {
-  max-height: 15rem;
-}
-
-.overflow-y-auto {
-  overflow-y: auto;
-}
-
-.p-2 {
-  padding: 0.5rem;
-}
-
-.hover\:bg-gray-200:hover {
-  background-color: #E5E7EB;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.mt-4 {
-  margin-top: 1rem;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.text-gray-600 {
-  color: #4B5563;
-}
-*/
-
-/* Styles for the Playlist Manager Component */
+/* Custom styles */
 .playlist-manager {
-  /* ...existing styles... */
+  position: relative;
+  padding: 1rem;
 }
 
 .input-field {
   width: 100%;
   padding: 0.5rem;
   margin-bottom: 1rem;
-  border: 1px solid #D1D5DB;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
 }
 
-.song-entry {
-  position: relative;
+.dark .input-field {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
 }
 
 .suggestions-list {
   position: absolute;
   z-index: 10;
   width: 100%;
-  background-color: white;
-  border: 1px solid #D1D5DB;
-  border-radius: 0.25rem;
+  margin-top: 0.25rem;
   max-height: 15rem;
   overflow-y: auto;
-  margin-top: 0.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+}
+
+.dark .suggestions-list {
+  background-color: #1f2937;
+  border-color: #374151;
 }
 
 .suggestion-item {
@@ -114,43 +95,46 @@
 }
 
 .suggestion-item:hover {
-  background-color: #E5E7EB;
+  background-color: #f3f4f6;
+}
+
+.dark .suggestion-item:hover {
+  background-color: #374151;
 }
 
 .add-button {
   padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
-  background-color: #3B82F6;
+  border-radius: 0.375rem;
+  background-color: #3b82f6;
   color: white;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.add-button:hover {
+  background-color: #2563eb;
 }
 
 .add-button:disabled {
-  background-color: #93C5FD;
+  background-color: #93c5fd;
   cursor: not-allowed;
-}
-
-.songs-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
 }
 
 .song-item {
   padding: 0.5rem 0;
-  border-bottom: 1px solid #D1D5DB;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .song-item {
+  border-color: #374151;
+  color: #f3f4f6;
 }
 
 .create-playlist-button {
   padding: 0.75rem 1.5rem;
   margin-top: 1rem;
-  background-color: #10B981;
+  border-radius: 0.375rem;
+  background-color: #10b981;
   color: white;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
 }
 
 .create-playlist-button:hover {
@@ -162,5 +146,9 @@
   right: 0.5rem;
   top: 0.5rem;
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
+}
+
+.dark .loading {
+  color: #9ca3af;
 }

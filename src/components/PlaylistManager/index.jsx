@@ -5,6 +5,7 @@ import { Tabs } from '../Tabs/Tabs';
 import { usePlaylist } from './hooks/usePlaylist';
 import { SpotifyAuthButton } from '../SpotifyAuthButton';
 import { useSpotifyAuth } from '../../hooks/useSpotifyAuth';
+import { ThemeToggle } from '../ThemeToggle';
 
 export function PlaylistManager() {
   const {
@@ -26,13 +27,15 @@ export function PlaylistManager() {
   const { isAuthenticated } = useSpotifyAuth();
 
   return (
-    <div className="space-y-6">
-      <Header platform={platform} onPlatformChange={setPlatform} />
-      
-      <div className="flex justify-end">
-        <SpotifyAuthButton />
+    <div className="space-y-6 min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <div className="flex justify-between items-center">
+        <Header platform={platform} onPlatformChange={setPlatform} />
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <SpotifyAuthButton />
+        </div>
       </div>
-
+      
       <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
       
       <Content 

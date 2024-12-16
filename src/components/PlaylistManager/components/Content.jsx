@@ -21,7 +21,7 @@ export const Content = ({
   const [playlistName, setPlaylistName] = useState('');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-gray-900 dark:text-gray-100">
       {activeTab === 'manual' && (
         <div className="space-y-4">
           <AddSongForm onAddSong={onAddSong} />
@@ -33,7 +33,7 @@ export const Content = ({
 
       {activeTab === 'upload' && (
         <div className="space-y-4">
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             <FileUpload 
               onSongsUpload={onSongsUpload}
               accept=".csv"
@@ -65,7 +65,7 @@ export const Content = ({
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
               placeholder="Enter playlist name"
-              className="flex-1 p-2 border rounded"
+              className="flex-1 p-2 border rounded bg-white dark:bg-gray-800 dark:border-gray-700"
             />
             <button
               onClick={() => onCreatePlaylist(playlistName)}
@@ -94,7 +94,7 @@ export const Content = ({
       )}
 
       {error && (
-        <div className="text-red-500">{error}</div>
+        <div className="text-red-500 dark:text-red-400">{error}</div>
       )}
     </div>
   );
