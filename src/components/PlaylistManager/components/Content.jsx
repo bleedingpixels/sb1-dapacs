@@ -39,9 +39,6 @@ export const Content = ({
               accept=".csv"
               maxSize={5242880}
             />
-            <p className="mt-4 text-sm text-gray-500 text-center">
-              CSV format: Title (required), Artist (optional), Album (optional)
-            </p>
           </div>
           {Array.isArray(songs) && songs.length > 0 && (
             <SongList songs={songs} onRemoveSong={onRemoveSong} />
