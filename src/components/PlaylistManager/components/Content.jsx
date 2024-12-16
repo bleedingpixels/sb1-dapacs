@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { SongForm } from '../../SongForm/SongForm';
-import { FileUpload } from '../../FileUpload/FileUpload';
-import { SongList } from '../../SongList/SongList';
+import { AddSongForm } from './AddSongForm';
+import { FileUpload } from '../../../components/FileUpload'; // Fix import path
+import { SongList } from './SongList';
 import { CreatePlaylistButton } from './CreatePlaylistButton';
 
 export const Content = ({
@@ -23,7 +23,7 @@ export const Content = ({
     <div className="space-y-6">
       {activeTab === 'manual' && (
         <div className="space-y-4">
-          <SongForm onAddSong={onAddSong} />
+          <AddSongForm onAddSong={onAddSong} />
           {Array.isArray(songs) && songs.length > 0 && ( // Add null check
             <SongList songs={songs} onRemoveSong={onRemoveSong} />
           )}
@@ -31,7 +31,21 @@ export const Content = ({
       )}
 
       {activeTab === 'upload' && (
-        <FileUpload onSongsUpload={onSongsUpload} />
+        <div className="space-y-4">
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <FileUpload 
+              onSongsUpload={onSongsUpload}
+              accept=".csv"
+              maxSize={5242880}
+            />
+            <p className="mt-4 text-sm text-gray-500 text-center">
+              CSV format: Title (required), Artist (optional), Album (optional)
+            </p>
+          </div>
+          {Array.isArray(songs) && songs.length > 0 && (
+            <SongList songs={songs} onRemoveSong={onRemoveSong} />
+          )}
+        </div>
       )}
 
       {Array.isArray(songs) && songs.length > 0 && ( // Add null check

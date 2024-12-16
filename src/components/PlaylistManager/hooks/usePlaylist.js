@@ -46,13 +46,20 @@ export function usePlaylist() {
   };
 
   const handleSongsUpload = async (uploadedSongs) => {
+    if (!Array.isArray(uploadedSongs) || uploadedSongs.length === 0) {
+      setError('No valid songs found in the CSV file');
+      return;
+    }
+
     const results = [];
     for (const song of uploadedSongs) {
+      if (!song.title) continue;
       const matchResult = await matchSong(song);
       if (matchResult) {
         results.push(matchResult);
       }
     }
+    
     setMatchedSongs(prev => [...prev, ...results]);
   };
 
