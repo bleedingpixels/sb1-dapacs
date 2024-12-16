@@ -28,6 +28,7 @@ export const getSpotifyAuthUrl = () => {
  * Preprocesses song titles and artist names for better matching.
  */
 const preprocessString = (str) => {
+  if (!str) return '';
   return str
     .toLowerCase()
     .trim()
@@ -47,14 +48,61 @@ const similarity = (str1, str2) => {
 };
 
 /**
+ * Matches a single song with Spotify's catalog
+ */
+export const findSpotifyMatch = async (accessToken, song) => {
+  const processedTitle = preprocessString(song.title);
+  const processedArtist = preprocessString(song.artist || '');
+  const query = song.artist ? `${processedTitle} ${processedArtist}` : processedTitle;
+
+  const { data } = await axios.get(
+    `${SPOTIFY_API_URL}/search`,
+    {
+      params: {
+        q: query,
+        type: 'track',
+        limit: 10,
+        market: 'US',
+      },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+
+  if (data.tracks.items.length === 0) {
+    return { matched: false, original: song };
+  }
+
+  const bestMatch = data.tracks.items
+    .sort((a, b) => {
+      const artistWeight = song.artist ? 0.5 : 0;
+      const aScore = similarity(a.name, song.title) + 
+                    (song.artist ? similarity(a.artists[0].name, song.artist) * artistWeight : 0) +
+                    (a.popularity / 100 * 0.3);
+      const bScore = similarity(b.name, song.title) + 
+                    (song.artist ? similarity(b.artists[0].name, song.artist) * artistWeight : 0) +
+                    (b.popularity / 100 * 0.3);
+      return bScore - aScore;
+    })[0];
+
+  return {
+    matched: true,
+    original: song,
+    spotifyUri: bestMatch.uri,
+    matchedTitle: bestMatch.name,
+    matchedArtist: bestMatch.artists[0].name,
+    popularity: bestMatch.popularity
+  };
+};
+
+/**
  * Creates a Spotify playlist and adds songs to it with improved matching.
  *
  * @param {string} accessToken - Spotify access token.
  * @param {string} playlistName - Name of the playlist to create.
- * @param {Array} songs - Array of song objects to add.
+ * @param {Array} matchedSongs - Array of matched song objects to add.
  * @returns {Object} - Created playlist details along with matched/unmatched songs.
  */
-export const createSpotifyPlaylist = async (accessToken, playlistName, songs) => {
+export const createSpotifyPlaylist = async (accessToken, playlistName, matchedSongs) => {
   if (!accessToken) {
     throw new Error('No access token available. Please connect to Spotify first.');
   }
@@ -78,86 +126,9 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
       }
     );
 
-    // Initialize arrays to hold track URIs and unmatched songs
-    const trackUris = [];
-    const unmatchedSongs = [];
-    const addedSongs = new Set(); // Track added songs to prevent duplicates
-
-    // Define Fuse.js options for fuzzy searching
-    const fuseOptions = {
-      keys: [{
-        name: 'name',
-        weight: 0.7
-      }, {
-        name: 'artists.name',
-        weight: 0.3
-      }],
-      threshold: 0.6, // More tolerant threshold
-      distance: 100, // Allow more characters between matches
-      minMatchCharLength: 2
-    };
-
-    // Iterate over each song to find the best match
-    for (const song of songs) {
-      const processedTitle = preprocessString(song.title);
-      const processedArtist = preprocessString(song.artist);
-      const query = `${processedTitle}`; // Search primarily by title
-
-      const { data } = await axios.get(
-        `${SPOTIFY_API_URL}/search`,
-        {
-          params: {
-            q: query,
-            type: 'track',
-            limit: 10,
-            market: 'US', // Add market parameter to improve results
-          },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-
-      if (data.tracks.items.length === 0) {
-        console.warn(`No matches found for "${song.title}" by "${song.artist}".`);
-        unmatchedSongs.push({
-          ...song,
-          suggestedMatch: null, // No suggestions available
-        });
-        continue;
-      }
-
-      // Sort tracks by popularity and filter duplicates
-      const bestMatch = data.tracks.items
-        .sort((a, b) => {
-          // Calculate match scores
-          const aScore = similarity(a.name, song.title) + 
-                        (similarity(a.artists[0].name, song.artist) * 0.5) +
-                        (a.popularity / 100 * 0.3);
-          const bScore = similarity(b.name, song.title) + 
-                        (similarity(b.artists[0].name, song.artist) * 0.5) +
-                        (b.popularity / 100 * 0.3);
-          return bScore - aScore;
-        })
-        .find(track => {
-          const key = `${preprocessString(track.name)}-${preprocessString(track.artists[0].name)}`;
-          if (!addedSongs.has(key)) {
-            addedSongs.add(key);
-            return true;
-          }
-          return false;
-        });
-
-      if (bestMatch) {
-        trackUris.push(bestMatch.uri);
-        console.log(`Added most popular version: "${bestMatch.name}" by "${bestMatch.artists[0].name}" (popularity: ${bestMatch.popularity})`);
-      } else {
-        unmatchedSongs.push({
-          ...song,
-          suggestedMatch: null, // No suggestions available
-        });
-      }
-    }
-
-    // Add tracks to the playlist
+    // Add matched tracks to the playlist
+    const trackUris = matchedSongs.filter(song => song.matched).map(song => song.spotifyUri);
+    
     if (trackUris.length > 0) {
       await axios.post(
         `${SPOTIFY_API_URL}/playlists/${playlist.id}/tracks`,
@@ -166,16 +137,12 @@ export const createSpotifyPlaylist = async (accessToken, playlistName, songs) =>
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-      console.log('Tracks added to playlist successfully.');
-    } else {
-      console.warn('No valid tracks to add to the playlist.');
     }
 
     return {
       ...playlist,
       tracksAdded: trackUris.length,
-      totalTracks: songs.length,
-      unmatchedSongs,
+      totalTracks: matchedSongs.length,
     };
   } catch (error) {
     console.error('Error creating Spotify playlist:', error.response ? error.response.data : error.message);

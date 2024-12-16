@@ -1,26 +1,59 @@
 import { useState } from 'react';
-import { createSpotifyPlaylist } from '../../../utils/spotify';
+import { createSpotifyPlaylist, findSpotifyMatch } from '../../../utils/spotify';
 import { createAppleMusicPlaylist } from '../../../utils/appleMusic';
 import { getSpotifyAuthUrl } from '../../../utils/spotify';
 
 export function usePlaylist() {
   const [songs, setSongs] = useState([]);
+  const [matchedSongs, setMatchedSongs] = useState([]);
   const [platform, setPlatform] = useState('spotify');
   const [activeTab, setActiveTab] = useState('manual');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
   const [unmatchedSongs, setUnmatchedSongs] = useState([]);
 
-  const handleAddSong = (newSong) => {
-    setSongs([...songs, newSong]);
+  const matchSong = async (song) => {
+    try {
+      const accessToken = localStorage.getItem('spotifyAccessToken');
+      if (!accessToken) {
+        setError('Please connect to Spotify first');
+        return null;
+      }
+      
+      const matchResult = await findSpotifyMatch(accessToken, song);
+      if (!matchResult.matched) {
+        setUnmatchedSongs(prev => [...prev, song]);
+      }
+      return matchResult;
+    } catch (error) {
+      console.error('Error matching song:', error);
+      return { matched: false, original: song };
+    }
+  };
+
+  const handleAddSong = async (song) => {
+    if (!song.title) return;
+    
+    const matchResult = await matchSong(song);
+    if (matchResult) {
+      setMatchedSongs(prev => [...prev, matchResult]);
+      // Remove setSongs since we're now using matchedSongs directly
+    }
   };
 
   const handleRemoveSong = (index) => {
-    setSongs(songs.filter((_, i) => i !== index));
+    setMatchedSongs(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSongsUpload = (uploadedSongs) => {
-    setSongs([...songs, ...uploadedSongs]);
+  const handleSongsUpload = async (uploadedSongs) => {
+    const results = [];
+    for (const song of uploadedSongs) {
+      const matchResult = await matchSong(song);
+      if (matchResult) {
+        results.push(matchResult);
+      }
+    }
+    setMatchedSongs(prev => [...prev, ...results]);
   };
 
   const createPlaylist = async (playlistName) => {
@@ -35,7 +68,7 @@ export function usePlaylist() {
           window.location.href = getSpotifyAuthUrl();
           return;
         }
-        const result = await createSpotifyPlaylist(accessToken, playlistName, songs);
+        const result = await createSpotifyPlaylist(accessToken, playlistName, matchedSongs);
         console.log('Playlist created successfully:', result);
         setUnmatchedSongs(result.unmatchedSongs);
       } else {
@@ -57,7 +90,15 @@ export function usePlaylist() {
   };
 
   return {
-    songs,
+    // Transform matched songs for display
+    songs: matchedSongs.map(song => ({
+      title: song.matched ? song.matchedTitle : song.original.title,
+      artist: song.matched ? song.matchedArtist : song.original.artist,
+      matched: song.matched,
+      spotifyUri: song.spotifyUri,
+      originalTitle: song.original.title,
+      originalArtist: song.original.artist
+    })),
     platform,
     activeTab,
     isCreating,

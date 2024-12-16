@@ -1,6 +1,6 @@
 export interface Song {
   title: string;
-  artist: string;
+  artist?: string; // Made artist optional
   album?: string;
   duration?: string;
 }
@@ -8,5 +8,5 @@ export interface Song {
 export interface Playlist {
   name: string;
   songs: Song[];
-  platform: 'spotify' | 'apple';
+  platform: 'spotify' /* | 'apple' */; // Temporarily disabled Apple Music
 }
