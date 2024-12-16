@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-surface-light text-content-light transition-colors
+    @apply bg-surface-light text-content-light 
            dark:bg-surface-dark dark:text-content-dark;
   }
 
@@ -13,33 +13,43 @@
   }
 
   input, select, textarea {
-    @apply bg-white border-gray-200 text-gray-900
-           dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100
+    @apply bg-white border-gray-200 text-content-light
+           dark:bg-surface-dark dark:border-accent-gray dark:text-content-dark
            focus:ring-primary-500 focus:border-primary-500
            dark:focus:ring-primary-400 dark:focus:border-primary-400;
   }
+}
+
+/* Replace custom .bg-white overrides for dark mode */
+.dark .bg-white {
+  background-color: #191414; /* Spotify-themed dark background */
 }
 
 /* Components */
 @layer components {
   .btn-primary {
     @apply px-4 py-2 rounded-lg font-medium
-           bg-primary-600 text-white hover:bg-primary-700
-           dark:bg-primary-500 dark:hover:bg-primary-600
+           bg-primary-100 text-white hover:bg-primary-200
+           dark:bg-primary-100 dark:hover:bg-primary-200
            transition-colors;
   }
 
   .btn-secondary {
     @apply px-4 py-2 rounded-lg font-medium
-           bg-gray-100 text-gray-900 hover:bg-gray-200
-           dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700
+           bg-gray-100 text-content-light hover:bg-gray-200
+           dark:bg-gray-800 dark:text-content-dark dark:hover:bg-gray-700
            transition-colors;
   }
 
   .card {
-    @apply bg-white border border-gray-200 rounded-lg p-6
-           dark:bg-gray-800 dark:border-gray-700
+    @apply bg-surface-dark border border-darkGray rounded-lg p-6
+           dark:bg-surface-dark dark:border-accent-gray
            shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .song-item {
+    @apply py-3 border-b border-darkGray last:border-0
+           dark:border-accent-gray bg-surface-dark;
   }
 }
 
@@ -63,13 +73,13 @@
   padding: 0.5rem;
   margin-bottom: 1rem;
   border-radius: 0.375rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #535353; /* darkGray */
 }
 
 .dark .input-field {
-  background-color: #1f2937;
-  border-color: #374151;
-  color: #f3f4f6;
+  background-color: #191414; /* dark mode background */
+  border-color: #535353; /* darkGray */
+  color: #1DB954; /* Spotify Green */
 }
 
 .suggestions-list {
@@ -80,13 +90,13 @@
   max-height: 15rem;
   overflow-y: auto;
   border-radius: 0.375rem;
-  border: 1px solid #e5e7eb;
-  background-color: white;
+  border: 1px solid #535353; /* darkGray */
+  background-color: #282828; /* Spotify's card background */
 }
 
 .dark .suggestions-list {
-  background-color: #1f2937;
-  border-color: #374151;
+  background-color: #191414;
+  border-color: #535353;
 }
 
 .suggestion-item {
@@ -95,50 +105,50 @@
 }
 
 .suggestion-item:hover {
-  background-color: #f3f4f6;
+  background-color: #1DB954; /* Spotify Green */
 }
 
 .dark .suggestion-item:hover {
-  background-color: #374151;
+  background-color: #1DB954; /* Spotify Green */
 }
 
 .add-button {
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: #1DB954; /* Spotify Green */
+  color: #FFFFFF;
   margin-top: 0.5rem;
 }
 
 .add-button:hover {
-  background-color: #2563eb;
+  background-color: #1ED760; /* Hover Green */
 }
 
 .add-button:disabled {
-  background-color: #93c5fd;
+  background-color: #B3B3B3; /* Light Gray */
   cursor: not-allowed;
 }
 
 .song-item {
   padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #ff009d;
 }
 
 .dark .song-item {
   border-color: #374151;
-  color: #f3f4f6;
+  color: #ff0cdf;
 }
 
 .create-playlist-button {
   padding: 0.75rem 1.5rem;
   margin-top: 1rem;
   border-radius: 0.375rem;
-  background-color: #10b981;
-  color: white;
+  background-color: #1DB954; /* Spotify Green */
+  color: #FFFFFF;
 }
 
 .create-playlist-button:hover {
-  background-color: #059669;
+  background-color: #1ED760; /* Hover Green */
 }
 
 .loading {
@@ -146,9 +156,9 @@
   right: 0.5rem;
   top: 0.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #B3B3B3; /* Light Gray */
 }
 
 .dark .loading {
-  color: #9ca3af;
+  color: #535353; /* Dark Gray */
 }
