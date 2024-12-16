@@ -157,9 +157,6 @@ export const FileUpload = ({ onSongsUpload }) => {
         </div>
       )}
 
-      <p className="text-sm text-gray-500 text-center mt-2">
-        CSV format: Title (required), Artist (optional), Album (optional)
-      </p>
     </div>
   );
 };
