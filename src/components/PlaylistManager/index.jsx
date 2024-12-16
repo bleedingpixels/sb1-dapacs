@@ -19,7 +19,8 @@ export function PlaylistManager() {
     handleAddSong,
     handleRemoveSong,
     handleSongsUpload,
-    createPlaylist
+    createPlaylist,
+    clearSongs
   } = usePlaylist();
 
   const { isAuthenticated } = useSpotifyAuth();
@@ -46,6 +47,7 @@ export function PlaylistManager() {
         error={error}
         isAuthenticated={isAuthenticated}
         unmatchedSongs={unmatchedSongs}
+        onClearSongs={clearSongs}
       />
     </div>
   );

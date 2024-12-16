@@ -16,6 +16,7 @@ export const Content = ({
   error,
   isAuthenticated,
   unmatchedSongs = [], // Add default value
+  onClearSongs, // Add this prop
 }) => {
   const [playlistName, setPlaylistName] = useState('');
 
@@ -50,6 +51,14 @@ export const Content = ({
 
       {Array.isArray(songs) && songs.length > 0 && ( // Add null check
         <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <button
+              onClick={onClearSongs}
+              className="px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+            >
+              Clear All Songs
+            </button>
+          </div>
           <div className="flex gap-4 items-center">
             <input
               type="text"

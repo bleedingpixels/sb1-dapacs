@@ -12,6 +12,12 @@ export function usePlaylist() {
   const [error, setError] = useState(null);
   const [unmatchedSongs, setUnmatchedSongs] = useState([]);
 
+  const clearSongs = () => {
+    setMatchedSongs([]);
+    setUnmatchedSongs([]);
+    setError(null);
+  };
+
   const matchSong = async (song) => {
     try {
       const accessToken = localStorage.getItem('spotifyAccessToken');
@@ -117,5 +123,6 @@ export function usePlaylist() {
     handleRemoveSong,
     handleSongsUpload,
     createPlaylist,
+    clearSongs,
   };
 }
