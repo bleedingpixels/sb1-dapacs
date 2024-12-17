@@ -1,0 +1,35 @@
+
+/* ...existing code... */
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links-mobile {
+  display: none;
+}
+
+.mobile-menu-icon {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  
+  .nav-links-mobile {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background-color: #fff;
+    width: 100%;
+  }
+
+  .mobile-menu-icon {
+    display: block;
+    cursor: pointer;
+  }
+}

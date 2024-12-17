@@ -1,0 +1,13 @@
+
+/* ...existing code... */
+.custom-button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  border: none;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #0056b3;
+}

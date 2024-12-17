@@ -1,0 +1,18 @@
+
+/* ...existing code... */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode .navbar {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .custom-button {
+  background-color: #bb86fc;
+}
+
+body.dark-mode .custom-button:hover {
+  background-color: #3700b3;
+}
